@@ -1,8 +1,22 @@
 import Feature from "@/components/feature";
-import { View, Text, SafeAreaView, ScrollView, Pressable } from "react-native";
-``
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = async () => {
+    const token = await AsyncStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-[#0B2B1C]">
       <ScrollView
@@ -29,17 +43,33 @@ export default function Index() {
 
         {/* Actions */}
         <View className="mt-10 space-y-5">
-          <Pressable className="bg-green-400 py-4 rounded-2xl my-1">
-            <Text className="text-center text-green-950 font-semibold text-base">
-              View Trip Lobbies
-            </Text>
-          </Pressable>
+          {isLoggedIn ? (
+            <>
+              <Pressable
+                className="bg-green-400 py-4 rounded-2xl my-1"
+                onPress={() => router.push("/trips" as const)}
+              >
+                <Text className="text-center text-green-950 font-semibold text-base">
+                  View Trip Lobbies
+                </Text>
+              </Pressable>
 
-          <Pressable className="border border-green-700 py-4 rounded-2xl my-1">
-            <Text className="text-center text-green-300 font-medium">
-              Join with Code
-            </Text>
-          </Pressable>
+              <Pressable className="border border-green-700 py-4 rounded-2xl my-1">
+                <Text className="text-center text-green-300 font-medium">
+                  Join with Code
+                </Text>
+              </Pressable>
+            </>
+          ) : (
+            <Pressable
+              className="bg-green-400 py-4 rounded-2xl my-1"
+              onPress={() => router.push("/signup" as const)}
+            >
+              <Text className="text-center text-green-950 font-semibold text-base">
+                Get Started
+              </Text>
+            </Pressable>
+          )}
         </View>
 
         {/* Mock Card / Progress UI */}
