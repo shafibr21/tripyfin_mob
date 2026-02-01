@@ -1,4 +1,6 @@
 import { api } from "@/src/api/client";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuthStore } from "./auth.store";
 
 const loginApi = async (payload: { email: string; password: string }) => {
   const { data } = await api.post("/auth/login", payload);
@@ -38,10 +40,28 @@ const resetPasswordApi = async (payload: {
   return data; // { message }
 };
 
+const logoutApi = async () => {
+  try {
+    const { data } = await api.post("/auth/logout");
+    // clear local token and auth store
+    try {
+      await AsyncStorage.removeItem("token");
+    } catch (e) {
+      // ignore
+    }
+    const logout = useAuthStore.getState().logout;
+    if (logout) await logout();
+    return data;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const authApi = {
   loginApi,
   signupApi,
   forgotPasswordApi,
   verifyOtpApi,
   resetPasswordApi,
+  logoutApi,
 };
