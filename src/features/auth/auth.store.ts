@@ -1,5 +1,5 @@
-import { create } from "zustand";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { create } from "zustand";
 
 type User = {
   id: string;
@@ -19,6 +19,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: null,
 
   login: async (token, user) => {
+    if (!token || typeof token !== "string") {
+      throw new Error("login: missing or invalid token");
+    }
+
     await AsyncStorage.setItem("token", token);
     set({ token, user });
   },

@@ -3,11 +3,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Pressable,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator, Alert, Pressable,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -18,10 +18,20 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async () => {
-    await authApi.signupApi({ name, email, password });
-    router.replace("/(auth)/login");
+    setLoading(true);
+    try {
+      await authApi.signupApi({ name, email, password });
+      router.replace("/(auth)/login");
+    } catch (err: any) {
+      const message =
+        err?.response?.data?.message || err?.message || "Signup failed";
+      Alert.alert("Signup Error", String(message));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -106,11 +116,20 @@ export default function Signup() {
         {/* Sign Up Button */}
         <TouchableOpacity
           onPress={handleSignup}
-          className="bg-green-400 py-4 rounded-2xl mt-8"
+          disabled={loading}
+          className={`py-4 rounded-2xl mt-8 ${loading ? "bg-green-700/60" : "bg-green-400"}`}
         >
-          <Text className="text-center text-green-950 font-bold text-base">
-            Sign Up
-          </Text>
+          {loading ? (
+            <ActivityIndicator
+              size="small"
+              color="#064E3B"
+              style={{ alignSelf: "center" }}
+            />
+          ) : (
+            <Text className="text-center text-green-950 font-bold text-base">
+              Sign Up
+            </Text>
+          )}
         </TouchableOpacity>
 
         {/* Divider */}

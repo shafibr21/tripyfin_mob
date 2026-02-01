@@ -4,11 +4,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Pressable,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Pressable,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -33,11 +34,24 @@ export default function LoginScreen() {
       setError("");
 
       const res = await authApi.loginApi({ email, password });
+      console.log("Login response:", res);
+      if (!res || !res.token) {
+        const msg = "Server did not return an auth token";
+        console.error(msg, res);
+        setError(msg);
+        Alert.alert("Login Error", msg);
+        return;
+      }
+
       await login(res.token, res.user);
 
       router.replace("/(tabs)/trips");
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Login failed");
+      console.error("Login error:", err?.response ?? err);
+      const message =
+        err?.response?.data?.message || err?.message || "Login failed";
+      setError(message);
+      Alert.alert("Login Error", String(message));
     } finally {
       setLoading(false);
     }
@@ -173,8 +187,8 @@ export default function LoginScreen() {
               <Text className="text-green-400">Sign Up</Text>
             </TouchableOpacity>
           </View>
-        </View>{" "}
-      </View>{" "}
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
