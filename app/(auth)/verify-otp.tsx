@@ -61,14 +61,6 @@ export default function VerifyOtp() {
   return (
     <SafeAreaView className="flex-1 bg-[#0B2B1C]">
       <View className="flex-1">
-        {/* Header */}
-        <View className="bg-[#0F3A26] pt-4 pb-6 px-6 flex-row items-center">
-          <Pressable onPress={() => router.back()} className="mr-4">
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </Pressable>
-          <Text className="text-white text-lg font-semibold">Verification</Text>
-        </View>
-
         {/* Content */}
         <View className="flex-1 px-6 pt-8">
           <Text className="text-white text-3xl font-bold mb-3">

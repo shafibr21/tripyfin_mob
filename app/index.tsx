@@ -2,7 +2,7 @@ import Feature from "@/components/feature";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
@@ -39,6 +39,15 @@ export default function Index() {
             Let the leader manage the pool while everyone tracks in real-time.
             No more “who owes who” at the end of the trip.
           </Text>
+
+          <TouchableOpacity
+            onPress={() => router.push('/(auth)/login')}
+            className="bg-green-400 py-6 rounded-full mt-6"
+          >
+            <Text className="text-center text-green-950 font-semibold text-base">
+              Login
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Actions */}
