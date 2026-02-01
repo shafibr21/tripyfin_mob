@@ -22,7 +22,7 @@ const forgotPasswordApi = async (payload: { email: string }) => {
     return data; // { message }
 };
 const verifyOtpApi = async (payload: { email: string; otp: string }) => {
-    const { data } = await api.post("/auth/verify-otp", payload);
+    const { data } = await api.post("/auth/verify-reset-otp", payload);
     return data; // { message }
 };
 const resetPasswordApi = async (payload: { email: string; newPassword: string }) => {
