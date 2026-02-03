@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, ScrollView, Pressable } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { Avatar } from "./Avatar";
 
 export function LobbyCard({
@@ -9,6 +9,7 @@ export function LobbyCard({
   progress,
   action,
   contribution,
+  onActionPress,
 }: any) {
   return (
     <View className="bg-[#0F3A26] rounded-3xl p-5 mb-4">
@@ -18,21 +19,13 @@ export function LobbyCard({
           <Text className="text-green-400 text-xs font-semibold mb-1">
             {role}
           </Text>
-          <Text className="text-white font-semibold text-base">
-            {title}
-          </Text>
-          <Text className="text-green-200 text-xs mt-1">
-            {subtitle}
-          </Text>
+          <Text className="text-white font-semibold text-base">{title}</Text>
+          <Text className="text-green-200 text-xs mt-1">{subtitle}</Text>
         </View>
 
         <View className="items-end">
-          <Text className="text-green-300 text-xs">
-            LOBBY BALANCE
-          </Text>
-          <Text className="text-white font-semibold mt-1">
-            {balance}
-          </Text>
+          <Text className="text-green-300 text-xs">LOBBY BALANCE</Text>
+          <Text className="text-white font-semibold mt-1">{balance}</Text>
         </View>
       </View>
 
@@ -56,10 +49,11 @@ export function LobbyCard({
           <Avatar />
         </View>
 
-        <Pressable className="px-4 py-2 rounded-full border border-green-600">
-          <Text className="text-green-300 text-xs font-medium">
-            {action}
-          </Text>
+        <Pressable
+          onPress={onActionPress}
+          className="px-4 py-2 rounded-full border border-green-600"
+        >
+          <Text className="text-green-300 text-xs font-medium">{action}</Text>
         </Pressable>
       </View>
     </View>
