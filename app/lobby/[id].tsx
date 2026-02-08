@@ -1,27 +1,33 @@
 import AddBulkExpenseModal from "@/app/modal/add-bulk-expense";
 import AddDepositModal from "@/app/modal/add-deposit";
 import AddIndividualExpenseModal from "@/app/modal/add-individual-expense";
-import { generateInviteCode, getLobbyById } from "@/src/features/trips/trips.api";
+
+import TransactionDetailsModal from "@/app/modal/transaction-details";
+import {
+  getLobbyById,
+  getLobbyTransactions,
+} from "@/src/features/trips/trips.api";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Alert,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import AddInviteModal from "../modal/add-Invite";
 
 export default function LobbyDetails() {
   const { id } = useLocalSearchParams();
   const [data, setData] = useState<any | null>(null);
+  const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [showBulkExpenseModal, setShowBulkExpenseModal] = useState(false);
   const [showIndividualExpenseModal, setShowIndividualExpenseModal] =
     useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [code, setCode] = useState<string | null>(null);
+  const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [selectedTransactionId, setSelectedTransactionId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     if (id) fetchData();
@@ -31,8 +37,12 @@ export default function LobbyDetails() {
     setLoading(true);
     setError(null);
     try {
-      const result = await getLobbyById(String(id));
+      const [result, txs] = await Promise.all([
+        getLobbyById(String(id)),
+        getLobbyTransactions(String(id)),
+      ]);
       setData(result);
+      setTransactions(Array.isArray(txs) ? txs : (txs?.data ?? txs ?? []));
     } catch (err: any) {
       setError(err?.message ?? "Failed to load lobby");
     } finally {
@@ -63,28 +73,9 @@ export default function LobbyDetails() {
     }
   };
 
-  const generatecode = async () => {
-              try {
-                // generate invite code
-                const data = await generateInviteCode(String(id));
-                const code = data?.inviteCode ?? data?.code ?? null;
-                if (code) {
-                  Alert.alert("Invite Code", code);
-                } else {
-                  Alert.alert("Invite Code", "No code returned by server");
-                }
-              } catch (err: any) {
-                console.error("Generate invite error", err);
-                const msg =
-                  err?.response?.data?.message ||
-                  err?.message ||
-                  "Failed to generate invite code";
-                Alert.alert("Error", String(msg));
-              }
-            };
+  // Invite code generation is handled in the AddInviteModal component
 
   const lobby = data?.lobby;
-  const transactions = data?.transactions ?? [];
   const isLeader = data?.isLeader ?? false;
   const totalBalance = lobby?.totalBalance ?? 0;
   const initialDeposit = lobby?.initialDeposit ?? 0;
@@ -105,9 +96,10 @@ export default function LobbyDetails() {
             Lobby Management
           </Text>
           <Pressable
-            onPress={() => generatecode()}
+            onPress={() => setShowInviteModal(true)}
+            className="h-9 w-20 rounded-full bg-[#13422C] items-center justify-center"
           >
-            <Text className="text-green-400 text-xl">code+</Text>
+            <Text className="text-green-400 text-xl">Invite +</Text>
           </Pressable>
         </View>
 
@@ -144,47 +136,44 @@ export default function LobbyDetails() {
                   style={{ width: `${progressPercent}%` }}
                 />
               </View>
-
-              <View className="flex-row justify-between">
-                <Text className="text-green-400 text-xs">
-                  {progressPercent}% of total deposits remaining
-                </Text>
-                <Text
-                  className={`text-xs font-semibold ${isHealthy ? "text-green-400" : "text-yellow-500"}`}
-                >
-                  {isHealthy ? "HEALTHY" : "LOW"}
-                </Text>
-              </View>
             </View>
 
             {/* Quick Actions */}
             <Text className="text-white font-semibold mb-3">Quick Actions</Text>
             <View className="flex-row flex-wrap justify-between mb-6">
-              <Pressable
-                onPress={() => setShowBulkExpenseModal(true)}
-                className="bg-[#0F3A26] rounded-2xl p-4 w-[48%] mb-3"
-              >
-                <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
-                  <Text className="text-green-400 text-xl">👥</Text>
-                </View>
-                <Text className="text-white font-semibold">Bulk Expense</Text>
-                <Text className="text-green-300 text-xs">
-                  Bus, hotels & splits
-                </Text>
-              </Pressable>
+              {isLeader ? (
+                <>
+                  <Pressable
+                    onPress={() => setShowBulkExpenseModal(true)}
+                    className="bg-[#0F3A26] rounded-2xl p-4 w-[48%] mb-3"
+                  >
+                    <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
+                      <Text className="text-green-400 text-xl">👥</Text>
+                    </View>
+                    <Text className="text-white font-semibold">
+                      Bulk Expense
+                    </Text>
+                    <Text className="text-green-300 text-xs">
+                      Bus, hotels & splits
+                    </Text>
+                  </Pressable>
 
-              <Pressable
-                onPress={() => setShowIndividualExpenseModal(true)}
-                className="bg-[#0F3A26] rounded-2xl p-4 w-[48%] mb-3"
-              >
-                <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
-                  <Text className="text-green-400 text-xl">🍽</Text>
-                </View>
-                <Text className="text-white font-semibold">
-                  Individual Expense
-                </Text>
-                <Text className="text-green-300 text-xs">Per-person meals</Text>
-              </Pressable>
+                  <Pressable
+                    onPress={() => setShowIndividualExpenseModal(true)}
+                    className="bg-[#0F3A26] rounded-2xl p-4 w-[48%] mb-3"
+                  >
+                    <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
+                      <Text className="text-green-400 text-xl">🍽</Text>
+                    </View>
+                    <Text className="text-white font-semibold">
+                      Individual Expense
+                    </Text>
+                    <Text className="text-green-300 text-xs">
+                      Per-person meals
+                    </Text>
+                  </Pressable>
+                </>
+              ) : null}
 
               <Pressable
                 onPress={() => setShowDepositModal(true)}
@@ -213,61 +202,51 @@ export default function LobbyDetails() {
             {/* Live Feed */}
             <Text className="text-white font-semibold mb-3">Live Feed</Text>
             {transactions.length > 0 ? (
-              transactions.slice(0, 5).map((tx: any) => (
-                <View
-                  key={tx._id}
-                  className="bg-[#0F3A26] rounded-2xl p-4 mb-3 flex-row items-center"
-                >
-                  <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mr-3">
-                    <Text className="text-green-400 text-xl">
-                      {tx.type === "deposit"
-                        ? "💳"
-                        : tx.type === "expense"
-                          ? "🍽"
-                          : "📝"}
-                    </Text>
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-white font-semibold">
-                      {tx.description ?? "Transaction"}
-                    </Text>
-                    <Text className="text-green-300 text-xs">
-                      {tx.creator?.name ?? "User"} •{" "}
-                      {new Date(tx.createdAt).toLocaleDateString()}
-                    </Text>
-                  </View>
-                  <Text
-                    className={`font-semibold ${tx.type === "deposit" ? "text-green-400" : "text-red-400"}`}
+              transactions.map((tx: any) => {
+                const id = tx._id ?? tx.id;
+                const creatorName =
+                  tx.creator?.name ?? tx.createdBy?.name ?? "User";
+                const type = tx.type ?? tx.txType ?? "";
+                const isDeposit = String(type).includes("deposit");
+                return (
+                  <Pressable
+                    key={id}
+                    onPress={() => {
+                      setSelectedTransactionId(String(id));
+                      setShowTransactionModal(true);
+                    }}
+                    className="bg-[#0F3A26] rounded-2xl p-4 mb-3 flex-row items-center"
                   >
-                    {tx.type === "deposit" ? "+" : "-"}৳{tx.totalAmount ?? 0}
-                  </Text>
-                </View>
-              ))
+                    <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mr-3">
+                      <Text className="text-green-400 text-xl">
+                        {isDeposit
+                          ? "💳"
+                          : type.includes("individual")
+                            ? "🍽"
+                            : "📝"}
+                      </Text>
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-white font-semibold">
+                        {tx.description ?? "Transaction"}
+                      </Text>
+                      <Text className="text-green-300 text-xs">
+                        {creatorName} •{" "}
+                        {new Date(tx.createdAt).toLocaleDateString()}
+                      </Text>
+                    </View>
+                    <Text
+                      className={`font-semibold ${isDeposit ? "text-green-400" : "text-red-400"}`}
+                    >
+                      {isDeposit ? "+" : "-"}৳{tx.totalAmount ?? 0}
+                    </Text>
+                  </Pressable>
+                );
+              })
             ) : (
               <Text className="text-green-300 text-center py-4">
                 No transactions yet
               </Text>
-            )}
-
-            {/* Low Balance Warning */}
-            {!isHealthy && (
-              <View className="bg-yellow-900/30 border border-yellow-700 rounded-2xl p-4 mt-4 mb-6">
-                <View className="flex-row items-center mb-2">
-                  <Text className="text-yellow-500 text-xl mr-2">⚠</Text>
-                  <Text className="text-yellow-500 font-semibold">
-                    Low Balance Warning
-                  </Text>
-                </View>
-                <Text className="text-yellow-200 text-xs mb-3">
-                  Lobby balance is dropping fast. {lobby.members?.length ?? 0}{" "}
-                  members haven't paid their initial deposit yet.
-                </Text>
-                <Pressable className="bg-yellow-600 py-2 px-4 rounded-full">
-                  <Text className="text-white text-xs font-semibold text-center">
-                    SEND REMINDERS
-                  </Text>
-                </Pressable>
-              </View>
             )}
           </View>
         ) : (
@@ -301,6 +280,22 @@ export default function LobbyDetails() {
           members: lobby?.members ?? [],
           onSuccess: handleExpenseSuccess,
         } as any)}
+      />
+
+      <AddInviteModal
+        visible={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+        lobbyId={String(id)}
+        lobbyName={lobby?.name ?? ""}
+        initialDeposit={lobby?.initialDeposit}
+      />
+      <TransactionDetailsModal
+        visible={showTransactionModal}
+        transactionId={selectedTransactionId}
+        onClose={() => {
+          setShowTransactionModal(false);
+          setSelectedTransactionId(null);
+        }}
       />
     </SafeAreaView>
   );

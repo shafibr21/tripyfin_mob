@@ -110,3 +110,31 @@ export async function generateInviteCode(lobbyId: string) {
   // expected response: { inviteCode: '...' }
   return res.data;
 }
+
+export async function getLobbyTransactions(lobbyId: string) {
+  const res = await api.get(`/users/transactions/lobbies/${lobbyId}`);
+  return res.data?.data ?? res.data ?? [];
+}
+
+export async function getTransactionDetails(transactionId: string) {
+  const res = await api.get(
+    `/users/transactions/lobbies/transaction-details/${transactionId}`,
+  );
+  return res.data?.data ?? res.data ?? null;
+}
+
+export async function joinLobbyByCodeDeposit(
+  inviteCode: string,
+  amount: number,
+) {
+  // POST to join with invite code and required initial deposit
+  // Adjust this endpoint to match your backend if needed
+  const res = await api.post(
+    `/users/transactions/lobbies/join-with-deposit-and-code`,
+    {
+      inviteCode,
+      amount,
+    },
+  );
+  return res.data;
+}
