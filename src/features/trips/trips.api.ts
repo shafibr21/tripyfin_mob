@@ -116,6 +116,44 @@ export async function getLobbyTransactions(lobbyId: string) {
   return res.data?.data ?? res.data ?? [];
 }
 
+export type LobbySummary = {
+  totalBalance: number;
+  initialDeposit: number;
+  utilizationPercent: number;
+  totalDeposits: number;
+  totalSpent: number;
+  memberCount: number;
+  transactionCount: number;
+};
+
+/**
+ * Fetch pre-computed summary/aggregates for a lobby.
+ * GET /users/lobbies/:id/summary
+ */
+export async function getLobbySummary(
+  lobbyId: string,
+): Promise<LobbySummary | null> {
+  try {
+    const res = await api.get(`/users/lobbies/${lobbyId}/summary`);
+    const payload = res.data?.data ?? res.data ?? null;
+    if (!payload) return null;
+
+    return {
+      totalBalance: Number(payload.totalBalance ?? 0),
+      initialDeposit: Number(payload.initialDeposit ?? 0),
+      utilizationPercent: Number(payload.utilizationPercent ?? 0),
+      totalDeposits: Number(payload.totalDeposits ?? 0),
+      totalSpent: Number(payload.totalSpent ?? 0),
+      memberCount: Number(payload.memberCount ?? 0),
+      transactionCount: Number(payload.transactionCount ?? 0),
+    } as LobbySummary;
+  } catch (err) {
+    // don't crash the app on missing endpoint; caller can fall back to client-side compute
+    console.warn("getLobbySummary failed", err);
+    return null;
+  }
+}
+
 export async function getTransactionDetails(transactionId: string) {
   const res = await api.get(
     `/users/transactions/lobbies/transaction-details/${transactionId}`,
