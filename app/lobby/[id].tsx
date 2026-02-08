@@ -5,6 +5,7 @@ import AddIndividualExpenseModal from "@/app/modal/add-individual-expense";
 import TransactionDetailsModal from "@/app/modal/transaction-details";
 import LobbySummary from "@/components/LobbySummary";
 import MembersList from "@/components/MembersList";
+import TransactionsList from "@/components/TransactionsList";
 import {
   getLobbyById,
   getLobbyMembers,
@@ -244,47 +245,13 @@ export default function LobbyDetails() {
                 </Text>
               )
             ) : transactions.length > 0 ? (
-              transactions.map((tx: any) => {
-                const id = tx._id ?? tx.id;
-                const creatorName =
-                  tx.creator?.name ?? tx.createdBy?.name ?? "User";
-                const type = tx.type ?? tx.txType ?? "";
-                const isDeposit = String(type).includes("deposit");
-                return (
-                  <Pressable
-                    key={id}
-                    onPress={() => {
-                      setSelectedTransactionId(String(id));
-                      setShowTransactionModal(true);
-                    }}
-                    className="bg-[#0F3A26] rounded-2xl p-4 mb-3 flex-row items-center"
-                  >
-                    <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mr-3">
-                      <Text className="text-green-400 text-xl">
-                        {isDeposit
-                          ? "💳"
-                          : type.includes("individual")
-                            ? "🍽"
-                            : "📝"}
-                      </Text>
-                    </View>
-                    <View className="flex-1">
-                      <Text className="text-white font-semibold">
-                        {tx.description ?? "Transaction"}
-                      </Text>
-                      <Text className="text-green-300 text-xs">
-                        {creatorName} •{" "}
-                        {new Date(tx.createdAt).toLocaleDateString()}
-                      </Text>
-                    </View>
-                    <Text
-                      className={`font-semibold ${isDeposit ? "text-green-400" : "text-red-400"}`}
-                    >
-                      {isDeposit ? "+" : "-"}৳{tx.totalAmount ?? 0}
-                    </Text>
-                  </Pressable>
-                );
-              })
+              <TransactionsList
+                transactions={transactions}
+                onSelect={(txId: string) => {
+                  setSelectedTransactionId(txId);
+                  setShowTransactionModal(true);
+                }}
+              />
             ) : (
               <Text className="text-green-300 text-center py-4">
                 No transactions yet
