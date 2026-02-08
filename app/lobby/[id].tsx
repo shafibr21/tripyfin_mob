@@ -3,8 +3,10 @@ import AddDepositModal from "@/app/modal/add-deposit";
 import AddIndividualExpenseModal from "@/app/modal/add-individual-expense";
 
 import TransactionDetailsModal from "@/app/modal/transaction-details";
+import LobbySummary from "@/components/LobbySummary";
 import {
   getLobbyById,
+  getLobbySummary,
   getLobbyTransactions,
 } from "@/src/features/trips/trips.api";
 import { router, useLocalSearchParams } from "expo-router";
@@ -16,6 +18,7 @@ export default function LobbyDetails() {
   const { id } = useLocalSearchParams();
   const [data, setData] = useState<any | null>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const [summary, setSummary] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDepositModal, setShowDepositModal] = useState(false);
@@ -37,12 +40,14 @@ export default function LobbyDetails() {
     setLoading(true);
     setError(null);
     try {
-      const [result, txs] = await Promise.all([
+      const [result, txs, sum] = await Promise.all([
         getLobbyById(String(id)),
         getLobbyTransactions(String(id)),
+        getLobbySummary(String(id)),
       ]);
       setData(result);
       setTransactions(Array.isArray(txs) ? txs : (txs?.data ?? txs ?? []));
+      setSummary(sum ?? null);
     } catch (err: any) {
       setError(err?.message ?? "Failed to load lobby");
     } finally {
@@ -77,11 +82,14 @@ export default function LobbyDetails() {
 
   const lobby = data?.lobby;
   const isLeader = data?.isLeader ?? false;
-  const totalBalance = lobby?.totalBalance ?? 0;
-  const initialDeposit = lobby?.initialDeposit ?? 0;
-  const usedFunds = initialDeposit - totalBalance;
+  // prefer server summary when available
+  const totalBalance = summary?.totalBalance ?? lobby?.totalBalance ?? 0;
+  const initialDeposit = summary?.initialDeposit ?? lobby?.initialDeposit ?? 0;
   const progressPercent =
-    initialDeposit > 0 ? Math.round((usedFunds / initialDeposit) * 100) : 0;
+    summary?.utilizationPercent ??
+    (initialDeposit > 0
+      ? Math.round(((initialDeposit - totalBalance) / initialDeposit) * 100)
+      : 0);
   const isHealthy = progressPercent <= 75;
 
   return (
@@ -117,26 +125,8 @@ export default function LobbyDetails() {
           </View>
         ) : lobby ? (
           <View>
-            {/* Lobby Balance Card */}
-            <View className="bg-[#0F3A26] rounded-3xl p-5 mb-6">
-              <Text className="text-white text-xl font-bold text-center mb-4">
-                Lobby Balance
-              </Text>
-
-              <View className="flex-row justify-between mb-2">
-                <Text className="text-green-300 text-xs">Available Funds</Text>
-                <Text className="text-white font-semibold">
-                  ৳{totalBalance} Taka
-                </Text>
-              </View>
-
-              <View className="h-2 bg-[#164C32] rounded-full overflow-hidden mb-2">
-                <View
-                  className="h-full bg-green-400 rounded-full"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </View>
-            </View>
+            {/* Lobby Balance + Summary */}
+            <LobbySummary summary={summary} lobbyName={lobby?.name} />
 
             {/* Quick Actions */}
             <Text className="text-white font-semibold mb-3">Quick Actions</Text>
