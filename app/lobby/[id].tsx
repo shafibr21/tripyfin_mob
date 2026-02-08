@@ -4,8 +4,10 @@ import AddIndividualExpenseModal from "@/app/modal/add-individual-expense";
 
 import TransactionDetailsModal from "@/app/modal/transaction-details";
 import LobbySummary from "@/components/LobbySummary";
+import MembersList from "@/components/MembersList";
 import {
   getLobbyById,
+  getLobbyMembers,
   getLobbySummary,
   getLobbyTransactions,
 } from "@/src/features/trips/trips.api";
@@ -19,6 +21,14 @@ export default function LobbyDetails() {
   const [data, setData] = useState<any | null>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [summary, setSummary] = useState<any | null>(null);
+  const [members, setMembers] = useState<any[]>([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+  const [viewMode, setViewMode] = useState<"transactions" | "members">(
+    "transactions",
+  );
+  const [selectedMemberIdForDeposit, setSelectedMemberIdForDeposit] = useState<
+    string | null
+  >(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showDepositModal, setShowDepositModal] = useState(false);
@@ -52,6 +62,20 @@ export default function LobbyDetails() {
       setError(err?.message ?? "Failed to load lobby");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchMembers = async () => {
+    if (!id) return;
+    setLoadingMembers(true);
+    try {
+      const res = await getLobbyMembers(String(id));
+      setMembers(res ?? []);
+      setViewMode("members");
+    } catch (err) {
+      console.warn("Failed to load members", err);
+    } finally {
+      setLoadingMembers(false);
     }
   };
 
@@ -178,20 +202,48 @@ export default function LobbyDetails() {
                 </Text>
               </Pressable>
 
-              <Pressable className="bg-[#0F3A26] rounded-2xl p-4 w-[48%]">
+              <Pressable
+                onPress={() => {
+                  if (viewMode === "members") setViewMode("transactions");
+                  else fetchMembers();
+                }}
+                className="bg-[#0F3A26] rounded-2xl p-4 w-[48%]"
+              >
                 <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
                   <Text className="text-green-400 text-xl">👤</Text>
                 </View>
                 <Text className="text-white font-semibold">Members</Text>
                 <Text className="text-green-300 text-xs">
-                  Manage {lobby.members?.length ?? 0} travelers
+                  Manage {lobby.members?.length ?? members.length ?? 0}{" "}
+                  travelers
                 </Text>
               </Pressable>
             </View>
 
             {/* Live Feed */}
-            <Text className="text-white font-semibold mb-3">Live Feed</Text>
-            {transactions.length > 0 ? (
+            <Text className="text-white font-semibold mb-3">
+              {viewMode === "members"
+                ? `Members (${members.length})`
+                : "Transactions"}
+            </Text>
+
+            {viewMode === "members" ? (
+              loadingMembers ? (
+                <Text className="text-green-300">Loading members...</Text>
+              ) : members.length > 0 ? (
+                <MembersList
+                  members={members}
+                  onDeposit={(memberId: string) => {
+                    setSelectedMemberIdForDeposit(memberId);
+                    setShowDepositModal(true);
+                  }}
+                />
+              ) : (
+                <Text className="text-green-300 text-center py-4">
+                  No members found
+                </Text>
+              )
+            ) : transactions.length > 0 ? (
               transactions.map((tx: any) => {
                 const id = tx._id ?? tx.id;
                 const creatorName =
@@ -250,6 +302,7 @@ export default function LobbyDetails() {
         lobbyId={String(id)}
         lobbyName={lobby?.name ?? ""}
         onSuccess={handleDepositSuccess}
+        userId={selectedMemberIdForDeposit}
       />
 
       <AddBulkExpenseModal

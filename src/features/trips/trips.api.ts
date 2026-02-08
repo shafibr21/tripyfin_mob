@@ -154,6 +154,36 @@ export async function getLobbySummary(
   }
 }
 
+export type LobbyMember = {
+  id: string;
+  name: string;
+  profilePictureUrl?: string | null;
+  deposited: number;
+  expenses: number;
+  balance: number;
+  owes: number;
+};
+
+export async function getLobbyMembers(lobbyId: string): Promise<LobbyMember[]> {
+  try {
+    const res = await api.get(`/users/lobbies/${lobbyId}/members`);
+    const payload = res.data?.data ?? res.data ?? [];
+    if (!Array.isArray(payload)) return [];
+    return payload.map((m: any) => ({
+      id: m.id ?? m._id ?? String(m.id),
+      name: m.name ?? "",
+      profilePictureUrl: m.profilePictureUrl ?? m.avatar ?? null,
+      deposited: Number(m.deposited ?? 0),
+      expenses: Number(m.expenses ?? 0),
+      balance: Number(m.balance ?? 0),
+      owes: Number(m.owes ?? 0),
+    }));
+  } catch (err) {
+    console.warn("getLobbyMembers failed", err);
+    return [];
+  }
+}
+
 export async function getTransactionDetails(transactionId: string) {
   const res = await api.get(
     `/users/transactions/lobbies/transaction-details/${transactionId}`,

@@ -18,6 +18,7 @@ interface AddDepositModalProps {
   lobbyId: string;
   lobbyName: string;
   onSuccess?: (transactionId?: string | null) => void;
+  userId?: string | null; // optional: deposit on behalf of a member
 }
 
 export default function AddDepositModal({
@@ -26,6 +27,7 @@ export default function AddDepositModal({
   lobbyId,
   lobbyName,
   onSuccess,
+  userId,
 }: AddDepositModalProps) {
   const user = useAuthStore((s) => s.user);
   const [amount, setAmount] = useState("");
@@ -50,7 +52,7 @@ export default function AddDepositModal({
       const payload = {
         amount: Number(amount),
         description,
-        userId: user?.id,
+        userId: userId ?? user?.id,
       } as any;
 
       const resData = await addDeposit(lobbyId, payload);
@@ -66,9 +68,9 @@ export default function AddDepositModal({
         err?.response?.data?.message || err?.message || "Failed to add deposit";
       Alert.alert("Error", msg);
     } finally {
-        setAmount("");
-        setDescription("");
-        setLoading(false);
+      setAmount("");
+      setDescription("");
+      setLoading(false);
     }
   };
 
