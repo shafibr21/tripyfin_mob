@@ -167,12 +167,9 @@ export default function AddBulkExpenseModal({
                   className="flex-1 text-white text-base"
                 />
                 <View className="flex-row space-x-1">
-                  <View className="h-8 w-8 rounded-full bg-green-400/20 items-center justify-center">
-                    <Text className="text-green-400 text-sm">😊</Text>
-                  </View>
-                  <View className="h-8 w-8 rounded-full bg-green-400/20 items-center justify-center">
+                  {/* <View className="h-8 w-8 rounded-full bg-green-400/20 items-center justify-center">
                     <Text className="text-green-400 text-sm">📎</Text>
-                  </View>
+                  </View> */}
                 </View>
               </View>
             </View>

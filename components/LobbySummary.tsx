@@ -36,9 +36,6 @@ export default function LobbySummary({ summary, lobbyName }: Props) {
             </Text>
           </View>
           <View className="items-end">
-            <View className="bg-green-400/10 px-3 py-1 rounded-full">
-              <Text className="text-green-400 text-xs">ACTIVE</Text>
-            </View>
           </View>
         </View>
 
