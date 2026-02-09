@@ -105,7 +105,7 @@ export default function AddInviteModal({
               </Pressable>
             </View>
 
-            <View className="mb-4">
+            {/* <View className="mb-4">
               <View className="flex-row items-center mb-2">
                 <Text className="text-white font-semibold">
                   📧 Invite by Email
@@ -135,7 +135,7 @@ export default function AddInviteModal({
               <View className="flex-1 h-[1px] bg-[#164C32]" />
               <Text className="text-green-300 text-xs mx-3">OR</Text>
               <View className="flex-1 h-[1px] bg-[#164C32]" />
-            </View>
+            </View> */}
 
             <View>
               <Text className="text-white font-semibold mb-2">
@@ -165,9 +165,6 @@ export default function AddInviteModal({
                     }}
                     className="py-2"
                   >
-                    <Text className="text-green-300 text-center">
-                      Generate again
-                    </Text>
                   </Pressable>
                 </View>
               ) : (
