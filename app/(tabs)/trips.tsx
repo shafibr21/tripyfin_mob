@@ -4,6 +4,9 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import JoinLobbyModal from "@/app/modal/join-lobby";
+import { Image } from "expo-image";
+import { images } from "@/constants/images";
+
 
 export default function Trips() {
   const [lobbies, setLobbies] = useState<Lobby[] | null>(null);
@@ -34,16 +37,16 @@ export default function Trips() {
         {/* Header */}
         <View className="flex-row items-center justify-between mt-4 mb-6">
           <View className="flex-row items-center space-x-3">
-            <View className="h-10 w-10 rounded-full bg-green-700 items-center justify-center">
-              <Text className="text-white font-semibold">S</Text>
+            <View className="h-10 w-10 items-center justify-center mr-2">
+              <Image source={images.logo} style={{ width: 28, height: 28}} className="rounded-2xl" />
             </View>
             <Text className="text-white text-lg font-semibold">
               Travel Lobbies
             </Text>
           </View>
 
-          <Pressable onPress={() => setShowJoinModal(true)} className="h-9 w-9 rounded-full bg-[#13422C] items-center justify-center">
-            <Text className="text-green-400">JOIN</Text>
+          <Pressable onPress={() => setShowJoinModal(true)} className="h-5 w-10 rounded-lg bg-green-400 items-center justify-center">
+            <Text className="text-green-600">JOIN</Text>
           </Pressable>
         </View>
     <JoinLobbyModal visible={showJoinModal} onClose={() => setShowJoinModal(false)} onSuccess={fetchLobbies} />

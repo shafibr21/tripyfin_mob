@@ -47,7 +47,7 @@ export default function TransactionItem({ tx, onPress }: Props) {
   return (
     <Pressable
       onPress={() => onPress && onPress(String(id))}
-      className="bg-[#071018] rounded-2xl p-4 mb-3 flex-row items-center"
+      className="bg-[#0F3A26] rounded-2xl p-4 mb-3 flex-row items-center"
     >
       <View className="h-12 w-12 rounded-full bg-[#0B2B1C] items-center justify-center mr-4 overflow-hidden">
         {creator.profilePictureUrl ? (
@@ -77,11 +77,8 @@ export default function TransactionItem({ tx, onPress }: Props) {
           {isDeposit ? "+" : "-"}৳{fmt(amount)}
         </Text>
         <View className="mt-2 flex-row items-center">
-          <View className="bg-[#0F3A26] px-3 py-1 rounded-full mr-2">
+          <View className="bg-[#0F3A26] py-1 rounded-full">
             <Text className="text-green-300 text-xs">{typeBadge(type)}</Text>
-          </View>
-          <View className="bg-[#0F3A26] px-2 py-1 rounded-full">
-            <Text className="text-green-300 text-xs">👁</Text>
           </View>
         </View>
       </View>

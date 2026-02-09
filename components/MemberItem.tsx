@@ -22,7 +22,7 @@ export default function MemberItem({ member, onDeposit }: Props) {
   const owes = Number(member.owes ?? 0);
 
   return (
-    <View className="bg-[#071018] rounded-2xl p-4 mb-3 flex-row items-center">
+    <View className="bg-[#0F3A26] rounded-2xl p-4 mb-3 flex-row items-center">
       <View className="h-12 w-12 rounded-full bg-[#0B2B1C] items-center justify-center mr-4 overflow-hidden">
         {member.profilePictureUrl ? (
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
