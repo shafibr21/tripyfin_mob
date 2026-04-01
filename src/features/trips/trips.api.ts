@@ -206,3 +206,8 @@ export async function joinLobbyByCodeDeposit(
   );
   return res.data;
 }
+
+export async function createLobby(payload: { name: string; initialDeposit: number }) {
+  const res = await api.post(`/users/lobbies`, payload);
+  return res.data;
+}
