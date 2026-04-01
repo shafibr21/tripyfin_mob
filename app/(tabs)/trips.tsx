@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
 import JoinLobbyModal from "@/app/modal/join-lobby";
+import CreateLobbyModal from "@/app/modal/create-lobby";
 import { Image } from "expo-image";
 import { images } from "@/constants/images";
 
@@ -13,6 +14,7 @@ export default function Trips() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     fetchLobbies();
@@ -45,13 +47,13 @@ export default function Trips() {
             </Text>
           </View>
 
-          <Pressable onPress={() => setShowJoinModal(true)} className="h-5 w-10 rounded-lg bg-green-400 items-center justify-center">
-            <Text className="text-green-600">JOIN</Text>
+          <Pressable onPress={() => setShowJoinModal(true)} className="h-8 w-12 rounded-lg bg-green-400 items-center justify-center">
+            <Text className="text-black font-semibold">JOIN</Text>
           </Pressable>
         </View>
     <JoinLobbyModal visible={showJoinModal} onClose={() => setShowJoinModal(false)} onSuccess={fetchLobbies} />
         {/* Create Lobby */}
-        <Pressable className="bg-green-400 py-4 rounded-2xl mb-6 active:opacity-90">
+        <Pressable onPress={() => setShowCreateModal(true)} className="bg-green-400 py-4 rounded-2xl mb-6 active:opacity-90">
           <Text className="text-center text-green-950 font-semibold text-base">
             + Create New Lobby
           </Text>
@@ -94,6 +96,6 @@ export default function Trips() {
           <Text className="text-green-300">No active lobbies found.</Text>
         )}
       </ScrollView>
-    </SafeAreaView><JoinLobbyModal visible={showJoinModal} onClose={() => setShowJoinModal(false)} /></>
+    </SafeAreaView><JoinLobbyModal visible={showJoinModal} onClose={() => setShowJoinModal(false)} /><CreateLobbyModal visible={showCreateModal} onClose={() => setShowCreateModal(false)} onSuccess={fetchLobbies} /></>
   );
 }
