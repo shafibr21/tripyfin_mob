@@ -1,6 +1,7 @@
 import Feature from "@/components/feature";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
+import JoinLobbyModal from "@/app/modal/join-lobby";
 import { useEffect, useState } from "react";
 import {
   Pressable,
@@ -13,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
 
   useEffect(() => {
     checkAuthStatus();
@@ -24,6 +26,7 @@ export default function Index() {
   };
 
   return (
+    <>
     <SafeAreaView className="flex-1 bg-[#0B2B1C]">
       <ScrollView
         contentContainerStyle={{ paddingBottom: 40 }}
@@ -71,7 +74,10 @@ export default function Index() {
                 </Text>
               </Pressable>
 
-              <Pressable className="border border-green-700 py-4 rounded-2xl my-1">
+              <Pressable
+                className="border border-green-700 py-4 rounded-2xl my-1"
+                onPress={() => setShowJoinModal(true)}
+              >
                 <Text className="text-center text-green-300 font-medium">
                   Join with Code
                 </Text>
@@ -118,5 +124,7 @@ export default function Index() {
         </View>
       </ScrollView>
     </SafeAreaView>
+    <JoinLobbyModal visible={showJoinModal} onClose={() => setShowJoinModal(false)} onSuccess={() => router.push("/trips")} />
+    </>
   );
 }
