@@ -13,6 +13,14 @@ const loginApi = async (payload: { email: string; password: string }) => {
   return data;
 };
 
+const googleLoginApi = async (idToken: string) => {
+  const { data } = await api.post("/auth/oauth/google", { idToken });
+  if (data && data.data && data.data.accessToken) {
+    return { token: data.data.accessToken, user: data.data.user };
+  }
+  return data;
+};
+
 const signupApi = async (payload: {
   name: string;
   email: string;
@@ -59,6 +67,7 @@ const logoutApi = async () => {
 
 export const authApi = {
   loginApi,
+  googleLoginApi,
   signupApi,
   forgotPasswordApi,
   verifyOtpApi,
