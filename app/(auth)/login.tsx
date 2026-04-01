@@ -1,7 +1,9 @@
 import { authApi } from "@/src/features/auth/auth.api";
 import { useAuthStore } from "@/src/features/auth/auth.store";
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import SocialMediaLoginBtn from "@/components/SocialMediaLoginBtn";
 import { useState } from "react";
 import {
   Alert,
@@ -61,26 +63,17 @@ export default function LoginScreen() {
     <SafeAreaView className="flex-1 bg-[#0B2B1C]">
       <View className="flex-1">
         {/* Header with Mountain Background */}
-        <View className="bg-[#0F3A26] pt-4 pb-8 px-6">
-          <Text className="text-white text-xl font-bold text-center mb-2">
-            TripYfin
+        <View className=" pt-4 pb- px-">
+          <Text className="text-white text-6xl font-bold text-center mb-2 font-medium">
+            TripyFin
           </Text>
-          {/* Mountain Graphic Placeholder */}
-          <View className="h-24 justify-center items-center opacity-30">
-            <View className="flex-row items-end gap-1">
-              <View
-                className="w-16 h-12 bg-green-800/40"
-                style={{ transform: [{ skewY: "-10deg" }] }}
-              />
-              <View
-                className="w-20 h-16 bg-green-800/60"
-                style={{ transform: [{ skewY: "10deg" }] }}
-              />
-              <View
-                className="w-16 h-12 bg-green-800/40"
-                style={{ transform: [{ skewY: "-10deg" }] }}
-              />
-            </View>
+          {/* Welcome Image */}
+          <View className="h-64 w-full justify-center items-center">
+            <Image
+              source={require("@/assets/images/welcome.avif")}
+              style={{ width: "100%", height: "100%" }}
+              contentFit="cover"
+            />
           </View>
         </View>
         {/* Content */}
@@ -156,7 +149,7 @@ export default function LoginScreen() {
           <TouchableOpacity
             disabled={loading}
             onPress={handleLogin}
-            className="bg-green-400 py-4 rounded-2xl mt-6"
+            className="bg-green-400 py-4 rounded-2xl mt-4"
           >
             <Text className="text-center text-green-950 font-bold text-base">
               {loading ? "Logging in..." : "Log In"}
@@ -164,19 +157,14 @@ export default function LoginScreen() {
           </TouchableOpacity>
 
           {/* Social Login */}
-          <View className="mt-8">
+          <View className="mt-4">
             <Text className="text-center text-gray-500 mb-4">
               OR CONTINUE WITH
             </Text>
 
             <View className="flex-row justify-center gap-4">
-              <TouchableOpacity className="border border-gray-600 px-6 py-3 rounded-xl">
-                <Text className="text-white">Google</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity className="border border-gray-600 px-6 py-3 rounded-xl">
-                <Text className="text-white">Apple</Text>
-              </TouchableOpacity>
+              <SocialMediaLoginBtn iconName="logo-google" title="Google" />
+              <SocialMediaLoginBtn iconName="logo-apple" title="Apple" />
             </View>
           </View>
 

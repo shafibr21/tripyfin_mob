@@ -30,27 +30,35 @@ export default function ForgotPassword() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#0B2B1C]">
-      <View className="flex-1">
+      <View className="flex-1 px-6">
+        {/* Header */}
+        <View className="flex-row items-center justify-center py-4 mb-2 relative">
+          <Pressable onPress={() => router.back()} className="absolute left-[-8px] p-2">
+            <Ionicons name="chevron-back" size={24} color="white" />
+          </Pressable>
+          <Text className="text-white text-base font-bold">Reset Password</Text>
+        </View>
+
         {/* Content */}
-        <View className="flex-1 px-6 pt-8">
-          <Text className="text-white text-3xl font-bold mb-3">
+        <View className="flex-1 pt-6">
+          <Text className="text-white text-2xl font-bold mb-3 tracking-wide">
             Forgot Password
           </Text>
-          <Text className="text-green-200/70 mb-8 text-base">
-            Enter your email address to receive an OTP code.
+          <Text className="text-[#8B9B94] mb-8 text-sm leading-5">
+            Enter your email address to receive an OTP{"\n"}code.
           </Text>
 
           {/* Email Input */}
           <View>
-            <Text className="text-white text-sm mb-2 font-medium">Email</Text>
+            <Text className="text-white text-xs mb-2 font-bold">Email</Text>
             <TextInput
               value={email}
               onChangeText={setEmail}
               placeholder="Enter your email address"
-              placeholderTextColor="#6B7280"
+              placeholderTextColor="#5A6D65"
               keyboardType="email-address"
               autoCapitalize="none"
-              className="bg-[#0F3A26] border border-green-800/50 rounded-2xl px-4 py-4 text-white text-base"
+              className="bg-[#0F3A26] rounded-2xl px-5 py-4 text-white text-sm font-medium"
             />
           </View>
 
@@ -58,9 +66,10 @@ export default function ForgotPassword() {
           <TouchableOpacity
             disabled={loading}
             onPress={sendCode}
-            className="bg-green-400 py-4 rounded-2xl mt-6"
+            style={{ shadowColor: "#1ED760", shadowOpacity: 0.3, shadowRadius: 10, elevation: 10 }}
+            className="bg-[#1ED760] py-4 rounded-3xl mt-8"
           >
-            <Text className="text-center text-green-950 font-bold text-base">
+            <Text className="text-center text-[#062612] font-bold text-base">
               {loading ? "Sending..." : "Send Code"}
             </Text>
           </TouchableOpacity>

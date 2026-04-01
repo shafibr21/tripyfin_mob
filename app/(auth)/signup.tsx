@@ -2,6 +2,7 @@ import { authApi } from "@/src/features/auth/auth.api";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
+import SocialMediaLoginBtn from "@/components/SocialMediaLoginBtn";
 import {
   ActivityIndicator, Alert, Pressable,
   Text,
@@ -143,15 +144,8 @@ export default function Signup() {
 
         {/* Social Login Buttons */}
         <View className="flex-row gap-4 mt-6">
-          <Pressable className="flex-1 bg-[#0F3A26] border border-green-800/50 py-4 rounded-2xl flex-row items-center justify-center">
-            <Ionicons name="logo-google" size={20} color="#FFFFFF" />
-            <Text className="text-white ml-2 font-medium">Google</Text>
-          </Pressable>
-
-          <Pressable className="flex-1 bg-[#0F3A26] border border-green-800/50 py-4 rounded-2xl flex-row items-center justify-center">
-            <Ionicons name="logo-apple" size={20} color="#FFFFFF" />
-            <Text className="text-white ml-2 font-medium">Apple</Text>
-          </Pressable>
+          <SocialMediaLoginBtn iconName="logo-google" title="Google" />
+          <SocialMediaLoginBtn iconName="logo-apple" title="Apple" />
         </View>
 
         {/* Login Link */}
