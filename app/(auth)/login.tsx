@@ -1,9 +1,10 @@
+import SocialMediaLoginBtn from "@/components/SocialMediaLoginBtn";
 import { authApi } from "@/src/features/auth/auth.api";
 import { useAuthStore } from "@/src/features/auth/auth.store";
 import { Ionicons } from "@expo/vector-icons";
+//import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import SocialMediaLoginBtn from "@/components/SocialMediaLoginBtn";
 import { useState } from "react";
 import {
   Alert,
@@ -59,14 +60,49 @@ export default function LoginScreen() {
     }
   };
 
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError("");
+
+  //     await GoogleSignin.hasPlayServices();
+  //     const response = await GoogleSignin.signIn();
+  //     const idToken = response.data?.idToken || (response as any).idToken;
+
+  //     if (!idToken) {
+  //       throw new Error("No ID Token found from Google");
+  //     }
+
+  //     const res = await authApi.googleLoginApi(idToken);
+  //     if (!res || !res.token) {
+  //       throw new Error("Backend did not return a valid token");
+  //     }
+
+  //     await login(res.token, res.user);
+  //     router.replace("/(tabs)/trips");
+  //   } catch (err: any) {
+  //     console.error("Google Login error:", err);
+  //     // Ignore cancellation
+  //     if (err.code !== "SIGN_IN_CANCELLED" && err.code !== "12501") {
+  //       setError(err.message || "Google Login failed");
+  //       Alert.alert("Google Login Error", String(err.message || "Something went wrong"));
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   return (
     <SafeAreaView className="flex-1 bg-[#0B2B1C]">
       <View className="flex-1">
         {/* Header with Mountain Background */}
-        <View className=" pt-4 pb- px-">
-          <Text className="text-white text-6xl font-bold text-center mb-2 font-medium">
-            TripyFin
-          </Text>
+        <View className=" pt-2">
+          <View className="flex-row items-center gap-2 justify-center">
+            <Ionicons name="wallet-outline" size={40} color="#00FF88" className="mb-3" />
+            <Text className="text-white text-6xl font-bold text-center mb-2 font-medium">
+              TripyFin
+            </Text>
+          </View>
           {/* Welcome Image */}
           <View className="h-64 w-full justify-center items-center">
             <Image
@@ -77,10 +113,10 @@ export default function LoginScreen() {
           </View>
         </View>
         {/* Content */}
-        <View className="flex-1 px-6 pt-8">
+        <View className="flex-1 px-6 pt-4">
           {/* Header Text */}
-          <View className="mb-8">
-            <Text className="text-white text-3xl font-bold">Welcome Back</Text>
+          <View className="mb-8 items-center justify-center">
+            <Text className="text-white text-4xl font-medium">Welcome Back</Text>
             <Text className="text-green-200/70 mt-2 text-base">
               Manage your travel funds effortlessly
             </Text>
@@ -163,8 +199,17 @@ export default function LoginScreen() {
             </Text>
 
             <View className="flex-row justify-center gap-4">
-              <SocialMediaLoginBtn iconName="logo-google" title="Google" />
-              <SocialMediaLoginBtn iconName="logo-apple" title="Apple" />
+              <SocialMediaLoginBtn
+                iconName="logo-google"
+                title="Google"
+                // onPress={handleGoogleLogin}
+                disabled={loading}
+              />
+              <SocialMediaLoginBtn
+                iconName="logo-apple"
+                title="Apple"
+                disabled={loading}
+              />
             </View>
           </View>
 

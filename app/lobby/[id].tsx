@@ -1,7 +1,6 @@
 import AddBulkExpenseModal from "@/app/modal/add-bulk-expense";
 import AddDepositModal from "@/app/modal/add-deposit";
 import AddIndividualExpenseModal from "@/app/modal/add-individual-expense";
-
 import TransactionDetailsModal from "@/app/modal/transaction-details";
 import LobbySummary from "@/components/LobbySummary";
 import MembersList from "@/components/MembersList";
@@ -14,7 +13,8 @@ import {
 } from "@/src/features/trips/trips.api";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import AddInviteModal from "../modal/add-Invite";
 
 export default function LobbyDetails() {
