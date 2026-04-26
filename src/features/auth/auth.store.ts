@@ -30,5 +30,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: async () => {
     await AsyncStorage.removeItem("token");
     set({ token: null, user: null });
+    
+    // Dynamically import to avoid circular dependency issues at the store level
+    const { socketService } = await import("@/src/services/socket");
+    socketService.disconnect();
   },
 }));
