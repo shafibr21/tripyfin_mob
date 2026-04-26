@@ -11,9 +11,10 @@ import {
   getLobbySummary,
   getLobbyTransactions,
 } from "@/src/features/trips/trips.api";
+import { ChatScreen } from "@/src/screens/ChatScreen";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Dimensions, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AddInviteModal from "../modal/add-Invite";
 
@@ -116,151 +117,165 @@ export default function LobbyDetails() {
       ? Math.round(((initialDeposit - totalBalance) / initialDeposit) * 100)
       : 0);
   const isHealthy = progressPercent <= 75;
+  const { width } = Dimensions.get("window");
 
   return (
     <SafeAreaView className="flex-1 bg-[#0B2B1C]">
-      <ScrollView className="px-5" showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View className="flex-row items-center justify-between mt-4 mb-6">
-          <Pressable onPress={() => router.back()}>
-            <Text className="text-green-400 text-2xl">‹</Text>
-          </Pressable>
-          <Text className="text-white text-base font-semibold">
-            Lobby Management
-          </Text>
-          <Pressable
-            onPress={() => setShowInviteModal(true)}
-            className="h-9 w-20 rounded-full bg-[#13422C] items-center justify-center"
-          >
-            <Text className="text-green-400 text-xl">Invite +</Text>
-          </Pressable>
-        </View>
-
-        {loading ? (
-          <Text className="text-green-300">Loading...</Text>
-        ) : error ? (
-          <View>
-            <Text className="text-red-400">{error}</Text>
-            <Pressable
-              onPress={fetchData}
-              className="mt-2 bg-green-400 py-2 px-3 rounded-2xl"
-            >
-              <Text className="text-green-950 text-center">Retry</Text>
-            </Pressable>
-          </View>
-        ) : lobby ? (
-          <View>
-            {/* Lobby Balance + Summary */}
-            <LobbySummary summary={summary} lobbyName={lobby?.name} />
-
-            {/* Quick Actions */}
-            <Text className="text-white font-semibold mb-3">Quick Actions</Text>
-            <View className="flex-row flex-wrap justify-between mb-6">
-              {isLeader ? (
-                <>
-                  <Pressable
-                    onPress={() => setShowBulkExpenseModal(true)}
-                    className="bg-[#0F3A26] rounded-2xl p-4 w-[48%] mb-3"
-                  >
-                    <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
-                      <Text className="text-green-400 text-xl">👥</Text>
-                    </View>
-                    <Text className="text-white font-semibold">
-                      Bulk Expense
-                    </Text>
-                    <Text className="text-green-300 text-xs">
-                      Bus, hotels & splits
-                    </Text>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={() => setShowIndividualExpenseModal(true)}
-                    className="bg-[#0F3A26] rounded-2xl p-4 w-[48%] mb-3"
-                  >
-                    <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
-                      <Text className="text-green-400 text-xl">🍽</Text>
-                    </View>
-                    <Text className="text-white font-semibold">
-                      Individual Expense
-                    </Text>
-                    <Text className="text-green-300 text-xs">
-                      Per-person meals
-                    </Text>
-                  </Pressable>
-                </>
-              ) : null}
-
-              <Pressable
-                onPress={() => setShowDepositModal(true)}
-                className="bg-[#0F3A26] rounded-2xl p-4 w-[48%]"
-              >
-                <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
-                  <Text className="text-green-400 text-xl">💳</Text>
-                </View>
-                <Text className="text-white font-semibold">Add Deposit</Text>
-                <Text className="text-green-300 text-xs">
-                  Top-up lobby funds
-                </Text>
+      <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} className="flex-1">
+        <View style={{ width }} className="flex-1">
+          <ScrollView className="px-5" showsVerticalScrollIndicator={false}>
+            {/* Header */}
+            <View className="flex-row items-center justify-between mt-4 mb-6">
+              <Pressable onPress={() => router.back()}>
+                <Text className="text-green-400 text-2xl">‹</Text>
               </Pressable>
-
+              <Text className="text-white text-base font-semibold">
+                Lobby Management
+              </Text>
               <Pressable
-                onPress={() => {
-                  if (viewMode === "members") setViewMode("transactions");
-                  else fetchMembers();
-                }}
-                className="bg-[#0F3A26] rounded-2xl p-4 w-[48%]"
+                onPress={() => setShowInviteModal(true)}
+                className="h-9 w-20 rounded-full bg-[#13422C] items-center justify-center"
               >
-                <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
-                  <Text className="text-green-400 text-xl">👤</Text>
-                </View>
-                <Text className="text-white font-semibold">Members</Text>
-                <Text className="text-green-300 text-xs">
-                  Manage {lobby.members?.length ?? members.length ?? 0}{" "}
-                  travelers
-                </Text>
+                <Text className="text-green-400 text-xl">Invite +</Text>
               </Pressable>
             </View>
 
-            {/* Live Feed */}
-            <Text className="text-white font-semibold mb-3">
-              {viewMode === "members"
-                ? `Members (${members.length})`
-                : "Transactions"}
-            </Text>
+            {loading ? (
+              <Text className="text-green-300">Loading...</Text>
+            ) : error ? (
+              <View>
+                <Text className="text-red-400">{error}</Text>
+                <Pressable
+                  onPress={fetchData}
+                  className="mt-2 bg-green-400 py-2 px-3 rounded-2xl"
+                >
+                  <Text className="text-green-950 text-center">Retry</Text>
+                </Pressable>
+              </View>
+            ) : lobby ? (
+              <View>
+                {/* Lobby Balance + Summary */}
+                <LobbySummary summary={summary} lobbyName={lobby?.name} />
 
-            {viewMode === "members" ? (
-              loadingMembers ? (
-                <Text className="text-green-300">Loading members...</Text>
-              ) : members.length > 0 ? (
-                <MembersList
-                  members={members}
-                  onDeposit={(memberId: string) => {
-                    setSelectedMemberIdForDeposit(memberId);
-                    setShowDepositModal(true);
-                  }}
-                />
-              ) : (
-                <Text className="text-green-300 text-center py-4">
-                  No members found
+                {/* Quick Actions */}
+                <Text className="text-white font-semibold mb-3">Quick Actions</Text>
+                <View className="flex-row flex-wrap justify-between mb-6">
+                  {isLeader ? (
+                    <>
+                      <Pressable
+                        onPress={() => setShowBulkExpenseModal(true)}
+                        className="bg-[#0F3A26] rounded-2xl p-4 w-[48%] mb-3"
+                      >
+                        <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
+                          <Text className="text-green-400 text-xl">👥</Text>
+                        </View>
+                        <Text className="text-white font-semibold">
+                          Bulk Expense
+                        </Text>
+                        <Text className="text-green-300 text-xs">
+                          Bus, hotels & splits
+                        </Text>
+                      </Pressable>
+
+                      <Pressable
+                        onPress={() => setShowIndividualExpenseModal(true)}
+                        className="bg-[#0F3A26] rounded-2xl p-4 w-[48%] mb-3"
+                      >
+                        <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
+                          <Text className="text-green-400 text-xl">🍽</Text>
+                        </View>
+                        <Text className="text-white font-semibold">
+                          Individual Expense
+                        </Text>
+                        <Text className="text-green-300 text-xs">
+                          Per-person meals
+                        </Text>
+                      </Pressable>
+                    </>
+                  ) : null}
+
+                  <Pressable
+                    onPress={() => setShowDepositModal(true)}
+                    className="bg-[#0F3A26] rounded-2xl p-4 w-[48%]"
+                  >
+                    <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
+                      <Text className="text-green-400 text-xl">💳</Text>
+                    </View>
+                    <Text className="text-white font-semibold">Add Deposit</Text>
+                    <Text className="text-green-300 text-xs">
+                      Top-up lobby funds
+                    </Text>
+                  </Pressable>
+
+                  <Pressable
+                    onPress={() => {
+                      if (viewMode === "members") setViewMode("transactions");
+                      else fetchMembers();
+                    }}
+                    className="bg-[#0F3A26] rounded-2xl p-4 w-[48%]"
+                  >
+                    <View className="h-10 w-10 rounded-full bg-green-400/20 items-center justify-center mb-2">
+                      <Text className="text-green-400 text-xl">👤</Text>
+                    </View>
+                    <Text className="text-white font-semibold">Members</Text>
+                    <Text className="text-green-300 text-xs">
+                      Manage {lobby.members?.length ?? members.length ?? 0}{" "}
+                      travelers
+                    </Text>
+                  </Pressable>
+                </View>
+
+                {/* Live Feed */}
+                <Text className="text-white font-semibold mb-3">
+                  {viewMode === "members"
+                    ? `Members (${members.length})`
+                    : "Transactions"}
                 </Text>
-              )
-            ) : transactions.length > 0 ? (
-              <TransactionsList
-                transactions={transactions}
-                onSelect={(txId: string) => {
-                  setSelectedTransactionId(txId);
-                  setShowTransactionModal(true);
-                }}
-              />
+
+                {viewMode === "members" ? (
+                  loadingMembers ? (
+                    <Text className="text-green-300">Loading members...</Text>
+                  ) : members.length > 0 ? (
+                    <MembersList
+                      members={members}
+                      onDeposit={(memberId: string) => {
+                        setSelectedMemberIdForDeposit(memberId);
+                        setShowDepositModal(true);
+                      }}
+                    />
+                  ) : (
+                    <Text className="text-green-300 text-center py-4">
+                      No members found
+                    </Text>
+                  )
+                ) : transactions.length > 0 ? (
+                  <TransactionsList
+                    transactions={transactions}
+                    onSelect={(txId: string) => {
+                      setSelectedTransactionId(txId);
+                      setShowTransactionModal(true);
+                    }}
+                  />
+                ) : (
+                  <Text className="text-green-300 text-center py-4">
+                    No transactions yet
+                  </Text>
+                )}
+              </View>
             ) : (
-              <Text className="text-green-300 text-center py-4">
-                No transactions yet
-              </Text>
+              <Text className="text-green-300">No lobby data</Text>
             )}
+          </ScrollView>
+        </View>
+
+        {/* Page 2: Chat */}
+        <View style={{ width }} className="flex-1">
+          <View className="flex-row items-center justify-center mt-4 mb-2 pb-2 border-b border-[#1A3F2D]">
+            <Text className="text-white text-base font-semibold">Lobby Chat</Text>
+            <Text className="text-green-300 text-xs absolute left-5">‹ Back</Text>
           </View>
-        ) : (
-          <Text className="text-green-300">No lobby data</Text>
-        )}
+          <ChatScreen lobbyId={String(id)} />
+        </View>
       </ScrollView>
 
       <AddDepositModal
